@@ -1,7 +1,5 @@
---1.Пакет, който да обслужва вписване на потребители (login). За
---целта трябва да се изгради отделна таблица, с потребители, като
---връзката потребител клиент да е 1:1. Паролата трябва да бъде
---хеширана.
+--1.A package to handle user login. For this purpose, a separate table with users should be created, 
+--with a one-to-one relationship between users and clients. The password should be hashed.
 
 CREATE TABLE USERS (
     USER_ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -56,10 +54,8 @@ CREATE OR REPLACE PACKAGE BODY USER_AUTH_PACKAGE AS
 END USER_AUTH_PACKAGE;
 /
 
---2.Функционалност чрез Scheduled job, който да прихваща
---потребителите, които не са се вписвали в приложението
---последните 3 месеца и да ги запазва в отделна таблица. Честота
---на изпълнение веднъж дневно.
+--2.Functionality through a scheduled job that captures users who have not logged into the application in the 
+--last 3 months and saves them in a separate table. The job should run once daily.
 
 CREATE TABLE INACTIVE_USERS (
     USER_ID NUMBER,
@@ -112,8 +108,7 @@ SELECT * FROM INACTIVE_USERS;
 
 SELECT * FROM USER_SCHEDULER_JOB_RUN_DETAILS WHERE JOB_NAME = 'FIND_INACTIVE_USERS_JOB' ORDER BY ACTUAL_START_DATE DESC;
 
---3. Пакет с CRUD операции за обработка на потребителите, които
---използват приложението.
+--3. A package with CRUD operations for handling users who use the application..
 
 CREATE OR REPLACE PACKAGE USER_CRUD_PACKAGE AS
     PROCEDURE CREATE_USER(
@@ -186,8 +181,8 @@ CREATE OR REPLACE PACKAGE BODY USER_CRUD_PACKAGE AS
 END USER_CRUD_PACKAGE;
 /
 
---4.Scheduled job, който да следи потребителите, които не са сменяли
---паролата си последните 3 месеца и да ги подготвя за известяване. Честота на изпълнение веднъж дневно.
+--4.A scheduled job to monitor users who have not changed their password in the last 3 months and prepare them 
+--for notification. The job should run once daily.
 
 CREATE TABLE PASSWORD_EXPIRY_USERS (
     USER_ID NUMBER,
@@ -199,7 +194,7 @@ ALTER TABLE USERS ADD (LAST_PASSWORD_CHANGE_DATE DATE);
 
 CREATE OR REPLACE PROCEDURE find_users_with_expired_password AS
 BEGIN
-    DELETE FROM PASSWORD_EXPIRY_USERS; -- Изтриваме предишните данни, ако има такива
+    DELETE FROM PASSWORD_EXPIRY_USERS; -- Delete previous data, if any
 
     INSERT INTO PASSWORD_EXPIRY_USERS (user_id, username, last_password_change_date)
     SELECT user_id, username, last_password_change_date
@@ -237,9 +232,8 @@ SELECT * FROM PASSWORD_EXPIRY_USERS;
 SELECT * FROM USER_SCHEDULER_JOB_RUN_DETAILS WHERE JOB_NAME = 'FIND_USERS_WITH_EXPIRED_PASSWORD_JOB' ORDER BY ACTUAL_START_DATE DESC;
 
 
---5.Scheduled job, който да следи наличността по сметките и да
---обновява статуса на всеки клиент на “VIP”, когато стойността
---стане по-голяма от 100000.
+--5.A scheduled job to monitor the balance of accounts and update the status of each client to 'VIP' 
+--when the value exceeds 100,000.
 
 ALTER TABLE CLIENTS ADD STATUS VARCHAR2(50);
 
