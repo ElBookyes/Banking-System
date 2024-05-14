@@ -1,11 +1,9 @@
 ---ORACLE HW 2
 
---1. Създайте тригер, който автоматично обновява статуса на клиент в
---базата данни, когато общият баланс на техните сметки преминава
---определен праг. Ако общият баланс на клиента надхвърли
---100,000 лева, статусът му трябва да бъде обновен на "VIP
---клиент". Този тригер ще гарантира, че важните клиенти се
---идентифицират и обслужват по подходящ начин.
+--1. Create a trigger that automatically updates the status of a client in the database when the total balance of 
+--their accounts exceeds a certain threshold. If the total balance of the client exceeds 100,000 BGN, their status 
+--should be updated to 'VIP Client'. 
+--This trigger will ensure that important clients are identified and serviced appropriately..
 
 select *
 from CLIENTS;
@@ -13,12 +11,12 @@ from CLIENTS;
 ALTER TABLE CLIENTS ADD STATUS VARCHAR2(200);
 
 INSERT INTO CLIENTS (FIRST_NAME, LAST_NAME, EMAIL, STATUS)
-VALUES ('Гопката', 'Гопов', 'gopka@example.com', 'Обикновен клиент');
+VALUES ('Gopkata', 'Gopov', 'gopka@example.com', 'Regular Client');
 
 INSERT INTO ACCOUNTS (CLIENT_ID, BALANCE)
 SELECT CLIENT_ID, 678000
 FROM CLIENTS
-WHERE FIRST_NAME = 'Гопката' AND LAST_NAME = 'Гопов';
+WHERE FIRST_NAME = 'Gopkata' AND LAST_NAME = 'Gopov';
 
 CREATE OR REPLACE TRIGGER Update_Client_Status
 AFTER INSERT OR UPDATE OF BALANCE ON ACCOUNTS
@@ -42,9 +40,8 @@ END;
 
 
 
---2. Пренапишете функционалността от първия проект (домашна
---работа 1), която следи движението на служителите между отдели,
---да работи с тригери.
+--2. Rewrite the functionality from the first project (homework 1), 
+--which tracks the movement of employees between departments, to work with triggers.
 
 
 CREATE OR REPLACE TRIGGER Insert_Employee_Movement_Trigger
@@ -68,8 +65,7 @@ END;
 /
 
 
---3. Създайте функции/процедури за извличане, добавяне, изтриване
---и промяна на данните на сметките.
+--3.Create functions/procedures for retrieving, adding, deleting, and updating account data.
 
 CREATE OR REPLACE PROCEDURE Get_Account_Info(
     p_client_id IN NUMBER,
@@ -124,8 +120,7 @@ BEGIN
 END;
 /
 
---4. Създайте функции/процедури за извличане, добавяне, изтриване
---и промяна на данните на клиентите.
+--4. Create functions/procedures for retrieving, adding, deleting, and updating client data.
 
 CREATE OR REPLACE PROCEDURE Get_Client_Info(
     p_client_id IN NUMBER,
@@ -189,8 +184,7 @@ END;
 /
 
 
---5 Създайте функционалност за изпращане на пари между
---отделните клиенти на банката.
+--5 Create functionality for transferring money between individual bank clients.
 
 CREATE OR REPLACE PROCEDURE Transfer_Money_Between_Clients(
     p_sender_id IN NUMBER,
@@ -225,10 +219,8 @@ END;
 /
 
 
---6. Имплементирайте модул за обработка на валутни курсове, като го
---прилагате при изпращане на преводи във валута, различна от
---валутите на сметките. (Примерно: Превод на 100 евро от Сметка
---А (левова) към сметка Сметка Б (доларова).
+--6. Implement a module for processing currency exchange rates, applying it when sending transfers in a currency different from the currencies of the accounts. 
+--(For example: Transfer of 100 euros from Account A (BGN) to Account B (USD).
 
 CREATE TABLE EXCHANGE_RATES (
     FROM_CURRENCY VARCHAR2(3),
