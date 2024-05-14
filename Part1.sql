@@ -171,7 +171,7 @@ AND COUNT(DISTINCT M.DEPARTMENT_TO) = 1;
 
 --BUSINESS QUERIES 3
 
--- 1 �� �� ��������� ������� �������� ������ ��������� ����� �� ���� �������� �� ����������
+-- 1. Implement a listing showing all employees who have been dismissed from the company.
 ALTER TABLE EMPLOYEE ADD STATUS varchar2(25);
 
 ALTER TABLE MPLOYEE
@@ -185,29 +185,28 @@ UPDATE EMPLOYEE SET STATUS = 'fired' WHERE EMPLOYEE_ID = 9;
 SELECT *
 FROM EMPLOYEE
 WHERE STATUS = 'fired';
--- 2 �� �� ��������� ������� �� ������ ��������� ����� �� � ���������� � �������.
+-- 2 Implement a listing of all employees who are currently on maternity leave..
 SELECT *
 FROM EMPLOYEE
 WHERE STATUS = 'motherhood';
--- 3 �� �� ��������� ������� �� ������ ��������� ����� �� � ������� / �������� � �������
+-- 3  Implement a listing of all employees who are currently on leave / sick leave.
 SELECT *
 FROM EMPLOYEE
 WHERE STATUS ='sick' OR STATUS='motherhood';
--- 4 �������� ������ ��������� ����� ����� �����������
+-- 4 Find all employees who do not have a manager.
 SELECT *
 FROM EMPLOYEE
 WHERE MANAGER_ID IS NULL;
 
--- 5 �������� ������ ������ ��������� ����� ��������� ������� �� ������ �� 5000 ��. 
---��������� �� � ������� ������� ���, ���� �� ��� ������� ������� ����� ���.
+-- 5 Find all senior employees who receive a salary higher than 5000 BGN. 
+-- Arrange them in reverse alphabetical order based on their first name.
 
 SELECT *
 FROM EMPLOYEE
 WHERE HIRE_DATE <= ADD_MONTHS(SYSDATE, -12*5) AND SALARY > 5000
 ORDER BY FIRST_NAME DESC;
 
--- 6 �������� �������� ���-������������� ��������� ��� ����� �����. 
---���������� �� �� ������.
+-- 6 Find the top five highest-paid employees in each department. Group them by department.
 
 WITH RankedEmployees AS (
 SELECT E.*, D.DEPARTMENT_NAME, ROW_NUMBER() OVER (PARTITION BY E.DEPARTMENT ORDER BY E.SALARY DESC) AS Row_Num
@@ -218,8 +217,7 @@ SELECT DEPARTMENT_NAME, FIRST_NAME, LAST_NAME, SALARY
 FROM RankedEmployees
 WHERE Row_Num <= 5;
 
--- 7 �������� ������ ��� ��������, � ����� / ����� �����������
--- ������� ��������� ���-����� �������.
+-- 7 Find the department or departments where the employees collectively receive the lowest salary.
 
 SELECT D.DEPARTMENT_NAME, SUM(E.SALARY) AS Total_Salary
 FROM EMPLOYEE E
@@ -227,8 +225,7 @@ JOIN DEPARTMENT D ON E.DEPARTMENT = D.DEPARTMENT_NAME
 GROUP BY D.DEPARTMENT_NAME
 ORDER BY Total_Salary;
 
--- 8 �������� �������� ������� ��� ����� �����, ���������� �� ����� �
---��������� �������� �������
+-- 8 Find the average salary in each department, group by department, and output the average salary.
 SELECT D.DEPARTMENT_NAME, AVG(E.SALARY) AS Average_Salary
 FROM EMPLOYEE E
 JOIN DEPARTMENT D ON E.DEPARTMENT = D.DEPARTMENT_NAME
@@ -236,14 +233,12 @@ GROUP BY D.DEPARTMENT_NAME;
 
 --BUSINESS QUERIES 4
 
---1 �� �� ������� ������ ������� ����� ���� ������ ��� ������. ( ��������
---�� BGN )
+--1 Display all clients who have accounts in a currency different from BGN.
 SELECT *
 FROM CLIENTS
 WHERE Currency != 'BGN';
 
---2 �� �� ������� ������ ������� ����� ���� ������ � ������ �������
---�����. ������� �����.
+--2 Display all clients who have accounts with zero balance. Completely empty..
 SELECT *
 FROM CLIENTS
 WHERE Balance = 0;
